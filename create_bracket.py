@@ -26,9 +26,17 @@ def create_bracket(players):
     """
     Arrange players into a single-elimination bracket structure.
     Adds "BYE" slots to ensure the total number of players is a power of 2.
+    Adds "BYE" for odd places (except 1st spot).
     """
+    # Ensure the list has a length that is a power of 2
     while len(players) & (len(players) - 1) != 0:  # Ensure power of 2
-        players.append("BYE")
+        players.append(None)  # Temporarily append None to check length
+
+    # Replace None with "BYE" for odd places except the first spot
+    for i in range(1, len(players), 2):  # Start from index 1 and step by 2 (odd indices)
+        if players[i] is None:
+            players[i] = "BYE"  # Assign "BYE" to odd positions
+    
     return players
 
 
@@ -50,8 +58,8 @@ def draw_bracket(sheet_name, players, pdf):
     winner_color = "#32CD32"  # Lime green for winner placeholders
 
     # Calculate spacing
-    match_height = 1.8
-    round_width = 4
+    match_height = 1.85
+    round_width = 4.0
 
     fig, ax = plt.subplots(figsize=(num_rounds * round_width, num_players * match_height / 2))
     ax.set_xlim(0, num_rounds * round_width)
@@ -66,11 +74,17 @@ def draw_bracket(sheet_name, players, pdf):
 
     # Draw initial round with alternating colors
     for i, player in enumerate(players):
-        x = 0
+        x = 0.75
         y = i * match_height
         color = blue if i % 2 == 0 else red  # Alternate colors with bold and visible red and blue
         # Split the player data into number/name and school
-        name, school = player.split("\n")
+        parts = player.split("\n") if player != "BYE" else [player]
+        if len(parts) == 1:
+            name = parts[0]
+            school = ""  # Assign "BYE" if no school part is provided
+        else:
+            name, school = parts
+
         ax.text(x, y, name, ha="right", va="center", fontsize=12, color="white",  # Larger font for number/name
                 bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor=color, lw=1, alpha=0.9))
         # Display the school name in a smaller font on the next line
@@ -89,18 +103,18 @@ def draw_bracket(sheet_name, players, pdf):
             else:
                 color = blue if i % 4 == 0 else red  # Alternate colors with bold and visible red and blue
 
-            x = round_idx * round_width
+            x = round_idx * round_width * 0.80  # Increase x to make lines longer
             y = (current_positions[i][1] + current_positions[i + 1][1]) / 2
 
             # Draw connecting lines
-            ax.plot([current_positions[i][0], x], [current_positions[i][1], y], color=color, lw=1)  # this is the color for line
-            ax.plot([current_positions[i + 1][0], x], [current_positions[i + 1][1], y], color=color, lw=1) # color for line
+            ax.plot([current_positions[i][0], x], [current_positions[i][1], y], color=color, lw=1)
+            ax.plot([current_positions[i + 1][0], x], [current_positions[i + 1][1], y], color=color, lw=1)
 
-            # Add placeholder for the winner with a soft lime green (adjust if necessary)
+            # Add placeholder for the winner
             ax.text(x, y, "", ha="center", va="center", fontsize=12, color=winner_color,
                     bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor=winner_color, lw=1, alpha=0.4))
-            
-            # Add "Winner" box at each intersection with updated color
+
+            # Add "Winner" box at each intersection
             ax.text(x, y, "     ", ha="center", va="center", fontsize=10, color="black", weight='bold',
                     bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor=color, lw=1, alpha=0.7))
 
@@ -112,8 +126,6 @@ def draw_bracket(sheet_name, players, pdf):
     # Save the figure to the PDF
     pdf.savefig(fig)
     plt.close(fig)
-
-
 
 
 def main():
