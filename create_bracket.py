@@ -8,7 +8,17 @@ def read_excel_sheets(file_path):
     Each sheet corresponds to a key (sheet name) with its respective player list.
     """
     sheets = pd.read_excel(file_path, sheet_name=None)
-    sheet_players = {sheet_name: data.iloc[:, 0].dropna().tolist() for sheet_name, data in sheets.items()}
+    sheet_players = {}
+    
+    for sheet_name, data in sheets.items():
+        # Assuming columns: 'Number', 'Name', 'School'
+        players = data.dropna(subset=['Name'])  # Remove rows where Name is NaN
+        player_info = [
+            f"{row['Number']} | {row['Name']}\n{row['School']}"  # Format as "Number | Name" and "School" on the next line
+            for _, row in players.iterrows()
+        ]
+        sheet_players[sheet_name] = player_info
+
     return sheet_players
 
 
@@ -59,32 +69,51 @@ def draw_bracket(sheet_name, players, pdf):
         x = 0
         y = i * match_height
         color = blue if i % 2 == 0 else red  # Alternate colors with bold and visible red and blue
-        ax.text(x, y, player, ha="right", va="center", fontsize=10, color="white",  # White text for better visibility
+        # Split the player data into number/name and school
+        name, school = player.split("\n")
+        ax.text(x, y, name, ha="right", va="center", fontsize=12, color="white",  # Larger font for number/name
+                bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor=color, lw=1, alpha=0.9))
+        # Display the school name in a smaller font on the next line
+        ax.text(x, y - 0.6, school, ha="right", va="center", fontsize=8, color="white",  # Smaller font for school
                 bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor=color, lw=1, alpha=0.9))
         positions.append((x, y))
 
-    # Draw subsequent rounds with a winner placeholder
+    # Draw subsequent rounds with a winner placeholder at each joint
     current_positions = positions
     for round_idx in range(1, num_rounds + 1):
         next_positions = []
         for i in range(0, len(current_positions), 2):
+            # Decide the color for each winner in this round
+            if round_idx == num_rounds:
+                color = 'green'  # Final winner's box color
+            else:
+                color = blue if i % 4 == 0 else red  # Alternate colors with bold and visible red and blue
+
             x = round_idx * round_width
             y = (current_positions[i][1] + current_positions[i + 1][1]) / 2
 
             # Draw connecting lines
-            ax.plot([current_positions[i][0], x], [current_positions[i][1], y], color="black", lw=1)
-            ax.plot([current_positions[i + 1][0], x], [current_positions[i + 1][1], y], color="black", lw=1)
+            ax.plot([current_positions[i][0], x], [current_positions[i][1], y], color=color, lw=1)  # this is the color for line
+            ax.plot([current_positions[i + 1][0], x], [current_positions[i + 1][1], y], color=color, lw=1) # color for line
 
-            # Add placeholder for the winner with a soft lime green
+            # Add placeholder for the winner with a soft lime green (adjust if necessary)
             ax.text(x, y, "", ha="center", va="center", fontsize=12, color=winner_color,
                     bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor=winner_color, lw=1, alpha=0.4))
+            
+            # Add "Winner" box at each intersection with updated color
+            ax.text(x, y, "     ", ha="center", va="center", fontsize=10, color="black", weight='bold',
+                    bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor=color, lw=1, alpha=0.7))
+
             next_positions.append((x, y))
 
         current_positions = next_positions
 
+
     # Save the figure to the PDF
     pdf.savefig(fig)
     plt.close(fig)
+
+
 
 
 def main():

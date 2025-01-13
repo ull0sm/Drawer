@@ -16,12 +16,12 @@ def write_to_excel(groups, output_file):
     # Write groups to a new Excel file
     with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
         for idx, group in enumerate(groups):
-            group.to_excel(writer, sheet_name=f'Group_{idx + 1}', index=False)
+            group.to_excel(writer, sheet_name=f'Pool_{idx + 1}', index=False)
 
 def main():
     # Accept input parameters
     file_path = "trial.xlsx"
-    n = 4
+    n = 8
     
     # Process the Excel file
     df = read_excel(file_path)
