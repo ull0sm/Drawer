@@ -21,7 +21,7 @@ def write_to_excel(groups, output_file):
 def main():
     # Accept input parameters
     file_path = "trial.xlsx"
-    n = 8
+    n = 4
     
     # Process the Excel file
     df = read_excel(file_path)

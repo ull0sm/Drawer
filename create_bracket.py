@@ -1,119 +1,94 @@
 import pandas as pd
-from reportlab.lib.pagesizes import A4, landscape
-from reportlab.pdfgen import canvas
-from reportlab.lib import colors
-from reportlab.lib.units import inch
-import os
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 
-def draw_bracket(c, players, width, height):
-    """Draws a single-elimination bracket with proper pair alignment and alternating colors."""
-    
-    rounds = [players]  # Initial round with all players
 
-    # Generate rounds by halving the players list until only 1 remains
-    while len(rounds[-1]) > 1:
-        previous_round = rounds[-1]
-        next_round = [f"Winner {i//2 + 1}" for i in range(0, len(previous_round), 2)]
-        rounds.append(next_round)
-    
-    round_count = len(rounds)
-    
-    box_width = 1.5 * inch
-    box_height = 0.5 * inch
-    vertical_spacing = 0.8 * inch
-    horizontal_spacing = 2.5 * inch
+def read_excel_sheets(file_path):
+    """
+    Read all sheets from an Excel file and return a dictionary of player lists.
+    Each sheet corresponds to a key (sheet name) with its respective player list.
+    """
+    sheets = pd.read_excel(file_path, sheet_name=None)
+    sheet_players = {sheet_name: data.iloc[:, 0].dropna().tolist() for sheet_name, data in sheets.items()}
+    return sheet_players
 
-    start_x = 1 * inch
-    start_y = height - 1.5 * inch
 
-    # Colors for alternating players
-    colors_list = [colors.red, colors.blue]
+def create_bracket(players):
+    """
+    Arrange players into a single-elimination bracket structure.
+    Adds "BYE" slots to ensure the total number of players is a power of 2.
+    """
+    while len(players) & (len(players) - 1) != 0:  # Ensure power of 2
+        players.append("BYE")
+    return players
 
-    # Draw each round
-    for round_num, round_players in enumerate(rounds):
-        for i, player in enumerate(round_players):
-            x = start_x + round_num * horizontal_spacing
-            y = start_y - i * vertical_spacing * (2 ** round_num)
-            
-            # Alternate colors for players
-            fill_color = colors_list[i % 2]
-            c.setFillColor(fill_color)
-            c.setStrokeColor(colors.black)
-            c.setLineWidth(1.5)
-            
-            # Draw the rectangle for the player
-            c.rect(x, y, box_width, box_height, stroke=1, fill=1)
-            
-            # Center the player name in the rectangle
-            c.setFillColor(colors.white)
-            c.setFont("Helvetica-Bold", 10)
-            text_width = c.stringWidth(player, "Helvetica-Bold", 10)
-            text_x = x + (box_width - text_width) / 2
-            text_y = y + (box_height / 2) - 4  # Adjust for text baseline
-            c.drawString(text_x, text_y, player)
-        
-        # Draw connecting lines for the next round
-        if round_num < round_count - 1:
-            next_round_count = len(rounds[round_num + 1])
-            for i in range(0, len(round_players), 2):
-                x1 = start_x + round_num * horizontal_spacing + box_width
-                y1 = start_y - i * vertical_spacing * (2 ** round_num) + box_height / 2
-                
-                x2 = x1 + horizontal_spacing
-                y2 = start_y - (i // 2) * vertical_spacing * (2 ** (round_num + 1)) + box_height / 2
-                
-                c.line(x1, y1, x2, y2)
 
-def create_draw_pdf(sheet_name, data, output_folder):
-    """Creates a tournament bracket PDF from player data."""
-    
-    pdf_path = os.path.join(output_folder, f"{sheet_name}_draw.pdf")
-    c = canvas.Canvas(pdf_path, pagesize=landscape(A4))
-    width, height = landscape(A4)
+def draw_bracket(sheet_name, players, pdf):
+    """
+    Draw the tournament bracket for the given players and save it as a page in the PDF.
+    """
+    num_players = len(players)
+    num_rounds = num_players.bit_length() - 1
 
-    # Title
-    c.setFont("Helvetica-Bold", 16)
-    c.drawCentredString(width / 2, height - 50, f"Single Elimination Draw - {sheet_name}")
+    # Calculate spacing
+    match_height = 1.5
+    round_width = 3
 
-    # Extract player names from the DataFrame
-    players = data['Name'].tolist()
-    
-    # Draw the bracket
-    draw_bracket(c, players, width, height)
+    fig, ax = plt.subplots(figsize=(num_rounds * round_width, num_players * match_height / 2))
+    ax.set_xlim(0, num_rounds * round_width)
+    ax.set_ylim(0, num_players * match_height)
+    ax.axis("off")
 
-    c.save()
-    return pdf_path
+    positions = []
 
-def combine_pdfs(pdf_paths, output_pdf):
-    from PyPDF2 import PdfMerger
+    # Draw the title
+    fig.suptitle(f"Single Elimination Draw - {sheet_name}", fontsize=14, weight='bold', y=0.92)
 
-    merger = PdfMerger()
-    for pdf in pdf_paths:
-        merger.append(pdf)
-    merger.write(output_pdf)
-    merger.close()
+    # Draw initial round
+    for i, player in enumerate(players):
+        x = 0
+        y = i * match_height
+        ax.text(x, y, player, ha="right", va="center", fontsize=8, bbox=dict(boxstyle="round,pad=0.3", edgecolor="black"))
+        positions.append((x, y))
 
-def main(input_excel, output_pdf):
-    output_folder = "temp_draw_pdfs"
-    os.makedirs(output_folder, exist_ok=True)
+    # Draw subsequent rounds
+    current_positions = positions
+    for round_idx in range(1, num_rounds + 1):
+        next_positions = []
+        for i in range(0, len(current_positions), 2):
+            x = round_idx * round_width
+            y = (current_positions[i][1] + current_positions[i + 1][1]) / 2
 
-    # Read the Excel file
-    xls = pd.ExcelFile(input_excel)
+            # Draw connecting lines
+            ax.plot([current_positions[i][0], x], [current_positions[i][1], y], color="black")
+            ax.plot([current_positions[i + 1][0], x], [current_positions[i + 1][1], y], color="black")
 
-    pdf_paths = []
-    for sheet_name in xls.sheet_names:
-        df = pd.read_excel(xls, sheet_name=sheet_name)
-        pdf_path = create_draw_pdf(sheet_name, df, output_folder)
-        pdf_paths.append(pdf_path)
+            # Add placeholder for the winner
+            ax.text(x, y, "", ha="center", va="center", fontsize=8, bbox=dict(boxstyle="round,pad=0.3", edgecolor="black"))
+            next_positions.append((x, y))
 
-    combine_pdfs(pdf_paths, output_pdf)
+        current_positions = next_positions
 
-    # Clean up temporary PDFs
-    for pdf_path in pdf_paths:
-        os.remove(pdf_path)
-    os.rmdir(output_folder)
+    # Save the figure to the PDF
+    pdf.savefig(fig)
+    plt.close(fig)
+
+
+def main():
+    input_excel = "grouped_output.xlsx"  # Replace with your Excel file path
+    output_pdf = "multi_page_tournament_bracket.pdf"
+
+    # Read all sheets and their players
+    sheet_players = read_excel_sheets(input_excel)
+
+    # Open a PDF file for multi-page output
+    with PdfPages(output_pdf) as pdf:
+        for sheet_name, players in sheet_players.items():
+            players = create_bracket(players)  # Ensure power of 2
+            draw_bracket(sheet_name, players, pdf)
+
+    print(f"Multi-page tournament bracket saved to {output_pdf}")
+
 
 if __name__ == "__main__":
-    input_excel = "grouped_outputj.xlsx"
-    output_pdf = "combined_draws.pdf"
-    main(input_excel, output_pdf)
+    main()
