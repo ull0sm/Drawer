@@ -2,7 +2,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
-
 def read_excel_sheets(file_path):
     """
     Read all sheets from an Excel file and return a dictionary of player lists.
@@ -30,28 +29,41 @@ def draw_bracket(sheet_name, players, pdf):
     num_players = len(players)
     num_rounds = num_players.bit_length() - 1
 
+    # Aesthetic colors and themes with stronger, bolder hues
+    bg_color = "#f4f4f9"  # Light grey background for the whole bracket
+    round_color = "#87CEEB"  # Sky blue for rounds
+    text_color = "#212121"  # Very dark grey (close to black) for text for readability
+
+    # Stronger, more visible red and blue
+    red = "#C62828"  # Bold and deep red (Crimson Red)
+    blue = "#1565C0"  # Deep and rich blue
+    winner_color = "#32CD32"  # Lime green for winner placeholders
+
     # Calculate spacing
-    match_height = 1.5
-    round_width = 3
+    match_height = 1.8
+    round_width = 4
 
     fig, ax = plt.subplots(figsize=(num_rounds * round_width, num_players * match_height / 2))
     ax.set_xlim(0, num_rounds * round_width)
     ax.set_ylim(0, num_players * match_height)
+    ax.set_facecolor(bg_color)  # Set background color for the entire bracket
     ax.axis("off")
 
     positions = []
 
-    # Draw the title
-    fig.suptitle(f"Single Elimination Draw - {sheet_name}", fontsize=14, weight='bold', y=0.92)
+    # Draw the title with a modern font
+    fig.suptitle(f"Single Elimination Tournament - {sheet_name}", fontsize=18, weight='bold', y=0.92, color=text_color, family="sans-serif")
 
-    # Draw initial round
+    # Draw initial round with alternating colors
     for i, player in enumerate(players):
         x = 0
         y = i * match_height
-        ax.text(x, y, player, ha="right", va="center", fontsize=8, bbox=dict(boxstyle="round,pad=0.3", edgecolor="black"))
+        color = blue if i % 2 == 0 else red  # Alternate colors with bold and visible red and blue
+        ax.text(x, y, player, ha="right", va="center", fontsize=10, color="white",  # White text for better visibility
+                bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor=color, lw=1, alpha=0.9))
         positions.append((x, y))
 
-    # Draw subsequent rounds
+    # Draw subsequent rounds with a winner placeholder
     current_positions = positions
     for round_idx in range(1, num_rounds + 1):
         next_positions = []
@@ -60,11 +72,12 @@ def draw_bracket(sheet_name, players, pdf):
             y = (current_positions[i][1] + current_positions[i + 1][1]) / 2
 
             # Draw connecting lines
-            ax.plot([current_positions[i][0], x], [current_positions[i][1], y], color="black")
-            ax.plot([current_positions[i + 1][0], x], [current_positions[i + 1][1], y], color="black")
+            ax.plot([current_positions[i][0], x], [current_positions[i][1], y], color="black", lw=1)
+            ax.plot([current_positions[i + 1][0], x], [current_positions[i + 1][1], y], color="black", lw=1)
 
-            # Add placeholder for the winner
-            ax.text(x, y, "", ha="center", va="center", fontsize=8, bbox=dict(boxstyle="round,pad=0.3", edgecolor="black"))
+            # Add placeholder for the winner with a soft lime green
+            ax.text(x, y, "", ha="center", va="center", fontsize=12, color=winner_color,
+                    bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor=winner_color, lw=1, alpha=0.4))
             next_positions.append((x, y))
 
         current_positions = next_positions
