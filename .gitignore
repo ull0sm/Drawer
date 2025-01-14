@@ -1,5 +1,6 @@
 *.pdf
 *.png
+!watermark.png
 *.svg
 trial.py
 grouped_output.xlsx
