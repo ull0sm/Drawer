@@ -178,7 +178,7 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
     3rd: _____________________________"""
 
     # Set text properties for better symmetry and spacing
-    ax.text(0.9, 0.09, results_text, ha="center", va="center", fontsize=11, color="#333333", fontweight='bold',
+    ax.text(0.95, 0.09, results_text, ha="center", va="center", fontsize=11, color="#333333", fontweight='bold',
             family='sans-serif', transform=ax.transAxes, linespacing=1.75)
 
     # Save the figure to the PDF
