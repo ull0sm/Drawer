@@ -22,7 +22,6 @@ def read_excel_sheets(file_path):
 
     return sheet_players
 
-
 def create_bracket(players):
     """
     Arrange players into a single-elimination bracket structure.
@@ -31,7 +30,6 @@ def create_bracket(players):
     while len(players) & (len(players) - 1) != 0:  # Ensure power of 2
         players.append("BYE")
     return players
-
 
 def draw_bracket(sheet_name, players, pdf, watermark_image):
     """
@@ -44,8 +42,6 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
     bg_color = "#f4f4f9"  # Light grey background for the whole bracket
     round_color = "#87CEEB"  # Sky blue for rounds
     text_color = "#212121"  # Very dark grey (close to black) for text for readability
-
-    # Stronger, more visible red and blue
     red = "#C62828"  # Bold and deep red (Crimson Red)
     blue = "#1565C0"  # Deep and rich blue
     winner_color = "#32CD32"  # Lime green for winner placeholders
@@ -81,8 +77,16 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
               alpha=0.1)  # Adjust alpha for transparency
 
     # Draw the title with a modern font
-    fig.suptitle(f"Shorin Kai Republic Bharat Cup", fontsize=18, weight='bold', y=0.92, color=text_color, family="sans-serif")
-    
+    fig.suptitle(
+        "Shorin Kai Republic Bharat Cup - 2025", 
+        fontsize=24, 
+        fontweight='bold', 
+        y=0.93, 
+        color="#1C2429", 
+        family="Arial", 
+        style='normal', 
+    )
+
     # Additional sheet-specific text: sheet name and category
     fig.text(
         s=f"{sheet_name}",
@@ -90,26 +94,24 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
         y=0.98, 
         ha='right', 
         va='top',
-        fontsize=12,       # Adjust font size
+        fontsize=12,  # Adjust font size
         color='black',  # Change text color
         backgroundcolor='lightyellow',  # Add a background color to the text
-        family='sans-serif',    # Change the font family
-        rotation=0,        # Optional: text rotation
-        bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.5') # Rounded box with padding
+        family='sans-serif',  # Change the font family
+        bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.5')  # Rounded box with padding
     )
 
     fig.text(
-        s=f"Category:",
+        s="Category:",
         x=0.05, 
         y=0.98, 
         ha='left', 
         va='top',
-        fontsize=12,       # Adjust font size
+        fontsize=12,  # Adjust font size
         color='black',  # Change text color
         backgroundcolor='lightyellow',  # Add a background color to the text
-        family='sans-serif',    # Change the font family
-        rotation=0,        # Optional: text rotation
-        bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.5') # Rounded box with padding
+        family='sans-serif',  # Change the font family
+        bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.5')  # Rounded box with padding
     )
 
     # Draw initial round with alternating colors
@@ -139,7 +141,7 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
         for i in range(0, len(current_positions), 2):
             # Decide the color for each winner in this round
             if round_idx == num_rounds:
-                color = 'green'  # Final winner's box color
+                color = winner_color  # Final winner's box color
             else:
                 color = blue if i % 4 == 0 else red  # Alternate colors with bold and visible red and blue
 
@@ -147,16 +149,17 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
             y = (current_positions[i][1] + current_positions[i + 1][1]) / 2
 
             # Draw connecting lines
-            ax.plot([current_positions[i][0], x], [current_positions[i][1], y], color=color, lw=1)
-            ax.plot([current_positions[i + 1][0], x], [current_positions[i + 1][1], y], color=color, lw=1)
+            ax.plot([current_positions[i][0], x], [current_positions[i][1], y], color=color, lw=1.5)
+            ax.plot([current_positions[i + 1][0], x], [current_positions[i + 1][1], y], color=color, lw=1.5)
 
             # Add placeholder for the winner
             ax.text(x, y, "", ha="center", va="center", fontsize=12, color=winner_color,
                     bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor=winner_color, lw=1, alpha=0.4))
 
             # Add "Winner" box at each intersection
-            ax.text(x, y, "     ", ha="center", va="center", fontsize=10, color="black", weight='bold',
-                    bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor=color, lw=1, alpha=0.7))
+            ax.text(x, y, "        ", ha="center", va="center", fontsize=10, color="white", weight='bold',
+                    bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor=color, lw=1, alpha=0.8),
+                    alpha=0.2)
 
             next_positions.append((x, y))
 
@@ -172,16 +175,15 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
            
     3rd: _____________________________
            
-    4th: _____________________________"""
+    3rd: _____________________________"""
 
     # Set text properties for better symmetry and spacing
     ax.text(0.9, 0.09, results_text, ha="center", va="center", fontsize=11, color="#333333", fontweight='bold',
-        family='sans-serif', transform=ax.transAxes, linespacing=1.75)
+            family='sans-serif', transform=ax.transAxes, linespacing=1.75)
 
     # Save the figure to the PDF
     pdf.savefig(fig)
     plt.close(fig)
-
 
 def main():
     input_excel = "grouped_output.xlsx"  # Replace with your Excel file path
@@ -198,7 +200,6 @@ def main():
             draw_bracket(sheet_name, players, pdf, watermark_image)
 
     print(f"Multi-page tournament bracket saved to {output_pdf}")
-
 
 if __name__ == "__main__":
     main()
