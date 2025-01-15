@@ -15,7 +15,7 @@ def read_excel_sheets(file_path):
         # Assuming columns: 'Number', 'Name', 'School'
         players = data.dropna(subset=['Name'])  # Remove rows where Name is NaN
         player_info = [
-            f"{row['Number']} | {row['Name']}\n{row['School']}"  # Format as "Number | Name" and "School" on the next line
+            f"{row['Number']}|{row['Name']}\n{row['School']}"  # Format as "Number | Name" and "School" on the next line
             for _, row in players.iterrows()
         ]
         sheet_players[sheet_name] = player_info
@@ -116,7 +116,7 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
 
     # Draw initial round with alternating colors
     for i, player in enumerate(players):
-        x = 0.75
+        x = 0.8
         y = i * match_height
         color = blue if i % 2 == 0 else red  # Alternate colors with bold and visible red and blue
         # Split the player data into number/name and school
