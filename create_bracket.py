@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.image as mpimg
+import random
 
 def read_excel_sheets(file_path):
     """
@@ -18,6 +19,7 @@ def read_excel_sheets(file_path):
             f"{row['Number']}|{row['Name']}\n{row['School']}"  # Format as "Number | Name" and "School" on the next line
             for _, row in players.iterrows()
         ]
+        print(f"Sheet: {sheet_name}, Players: {len(player_info)}")  # Debugging line
         sheet_players[sheet_name] = player_info
 
     return sheet_players
@@ -25,11 +27,31 @@ def read_excel_sheets(file_path):
 def create_bracket(players):
     """
     Arrange players into a single-elimination bracket structure.
-    Adds "BYE" slots to ensure the total number of players is a power of 2.
+    Adds random "BYE" slots to ensure the total number of players is a power of 2.
+    Ensures that no two "BYE" slots are paired together.
     """
-    while len(players) & (len(players) - 1) != 0:  # Ensure power of 2
-        players.append("BYE")
-    return players
+    # Separate out the "BYE"s and actual players
+    actual_players = [player for player in players if player != "BYE"]
+    byes = ["BYE"] * (len(players) - len(actual_players))  # Count of "BYE"s needed
+
+    # Add "BYE"s until the total players count is a power of 2
+    while len(actual_players) + len(byes) & (len(actual_players) + len(byes) - 1) != 0:
+        byes.append("BYE")
+
+    # Shuffle the actual players randomly
+    random.shuffle(actual_players)
+
+    # Combine the actual players and "BYE"s
+    final_players = actual_players + byes
+
+    # Shuffle the players again to randomize "BYE" slots, ensuring no two "BYE"s are adjacent
+    random.shuffle(final_players)
+
+    # Ensure no two "BYE"s are paired together by checking the pairs
+    while any(final_players[i] == final_players[i + 1] == "BYE" for i in range(0, len(final_players) - 1, 2)):
+        random.shuffle(final_players)  # Reshuffle if two "BYE"s are paired
+
+    return final_players
 
 def draw_bracket(sheet_name, players, pdf, watermark_image):
     """
@@ -50,7 +72,7 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
     match_height = 1.85
     round_width = 4.0
 
-    fig, ax = plt.subplots(figsize=(num_rounds * round_width, num_players * match_height / 2))
+    fig, ax = plt.subplots(figsize=(11.7, 8.3))  # A4 landscape size
     ax.set_xlim(0, num_rounds * round_width)
     ax.set_ylim(0, num_players * match_height)
     ax.set_facecolor(bg_color)  # Set background color for the entire bracket
@@ -186,20 +208,23 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
     plt.close(fig)
 
 def main():
-    input_excel = "grouped_output.xlsx"  # Replace with your Excel file path
-    output_pdf = "multi_page_tournament_bracket.pdf"
-    watermark_image = "watermark.png"  # Replace with your watermark PNG file path
+    try:
+        input_excel = "grouped_output.xlsx"  # Replace with your Excel file path
+        output_pdf = "multi_page_tournament_bracket.pdf"
+        watermark_image = "watermark.png"  # Replace with your watermark PNG file path
 
-    # Read all sheets and their players
-    sheet_players = read_excel_sheets(input_excel)
+        # Read all sheets and their players
+        sheet_players = read_excel_sheets(input_excel)
 
-    # Open a PDF file for multi-page output
-    with PdfPages(output_pdf) as pdf:
-        for sheet_name, players in sheet_players.items():
-            players = create_bracket(players)  # Ensure power of 2
-            draw_bracket(sheet_name, players, pdf, watermark_image)
+        # Open a PDF file for multi-page output
+        with PdfPages(output_pdf) as pdf:
+            for sheet_name, players in sheet_players.items():
+                players = create_bracket(players)  # Ensure power of 2
+                draw_bracket(sheet_name, players, pdf, watermark_image)
 
-    print(f"Multi-page tournament bracket saved to {output_pdf}")
+        print(f"Multi-page tournament bracket saved to {output_pdf}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
     main()
