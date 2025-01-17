@@ -154,12 +154,12 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
 
         # Display the combined text block with border only and dark text color
         ax.text(x, y, text, ha="right", va="center", fontsize=10, color="black",  # Dark color for visibility
-                bbox=dict(boxstyle="round,pad=0.3", edgecolor=color, facecolor="none", lw=2, alpha=0.9))  # Border only
+                bbox=dict(boxstyle="round,pad=0.3", edgecolor=color, facecolor="none", lw=2, alpha=0.7))  # Border only
         tempx = x
         tempy = y
         tie = f"|1|2|3|4|5|6|7|8|9|10|11|12|\n|C1|C2|C3|HC|H|Senshu|"
         ax.text(tempx, tempy - 0.85, tie, ha="right", va="center", fontsize=10, color="black",  # Dark color for school text
-                bbox=dict(boxstyle="round,pad=0.3", edgecolor=color, facecolor="none", lw=2, alpha=0.9))  # Border only
+                bbox=dict(boxstyle="round,pad=0.3", edgecolor=color, facecolor="none", lw=2, alpha=0.7))  # Border only
         positions.append((x, y))
 
     # Draw subsequent rounds with a winner placeholder at each joint
@@ -177,8 +177,8 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
             y = (current_positions[i][1] + current_positions[i + 1][1]) / 2
 
             # Draw connecting lines
-            ax.plot([current_positions[i][0], x], [current_positions[i][1], y], color="black", lw=1.5, alpha=0.5)
-            ax.plot([current_positions[i + 1][0], x], [current_positions[i + 1][1], y], color="black", lw=1.5, alpha=0.5)
+            ax.plot([current_positions[i][0], x], [current_positions[i][1], y], color="black", lw=1.5, alpha=0.2)
+            ax.plot([current_positions[i + 1][0], x], [current_positions[i + 1][1], y], color="black", lw=1.5, alpha=0.2)
 
             # Add placeholder for the winner with border only
             ax.text(x, y, "", ha="center", va="center", fontsize=12, color=winner_color,
@@ -186,7 +186,7 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
 
             # Add "Winner" box at each intersection with border only
             ax.text(x, y, "        ", ha="center", va="center", fontsize=10, color="white", weight='bold',
-                    bbox=dict(boxstyle="round,pad=0.3", edgecolor=color, facecolor="none", lw=2, alpha=0.8),
+                    bbox=dict(boxstyle="round,pad=0.3", edgecolor=color, facecolor="none", lw=2, alpha=0.7),
                     alpha=0.2)
             tempx = x
             tempy = y
@@ -195,7 +195,7 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
             if round_idx != num_rounds:
                 tie = f"|1|2|3|4|5|6|7|8|9|10|11|12|\n|C1|C2|C3|HC|H|Senshu|"
                 ax.text(tempx+1.2, tempy - 0.67, tie, ha="right", va="center", fontsize=10, color="black",  # Dark color for school text
-                        bbox=dict(boxstyle="round,pad=0.3", edgecolor=color, facecolor="none", lw=2, alpha=0.9))  # Border only
+                        bbox=dict(boxstyle="round,pad=0.3", edgecolor=color, facecolor="none", lw=2, alpha=0.7))  # Border only
 
             next_positions.append((x, y))
 
