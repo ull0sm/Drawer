@@ -70,9 +70,9 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
 
     # Calculate spacing
     match_height = 1.85
-    round_width = 4.0
+    round_width = 4 # changing this will adjust the first column distance from corner of the paper 
 
-    fig, ax = plt.subplots(figsize=(11.7, 8.3))  # A4 landscape size
+    fig, ax = plt.subplots(figsize=(11.7,8.3))
     ax.set_xlim(0, num_rounds * round_width)
     ax.set_ylim(0, num_players * match_height)
     ax.set_facecolor(bg_color)  # Set background color for the entire bracket
@@ -99,11 +99,14 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
               alpha=0.1)  # Adjust alpha for transparency
 
     # Draw the title with a modern font
-    fig.suptitle(
-        "Shorin Kai Republic Bharat Cup - 2025", 
+    fig.text(
+        s="Shorin Kai Republic Bharat Cup - 2025", 
         fontsize=24, 
         fontweight='bold', 
-        y=0.93, 
+        x = 0.5,
+        y=0.98,
+        ha = "center",
+        va = "top", 
         color="#1C2429", 
         family="Arial", 
         style='normal', 
@@ -138,8 +141,8 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
 
     # Draw initial round with alternating colors
     for i, player in enumerate(players):
-        x = 0.8
-        y = i * match_height
+        x = 1.5
+        y = i * match_height + 1.5
         color = blue if i % 2 == 0 else red  # Alternate colors with bold and visible red and blue
         # Split the player data into number/name and school
         parts = player.split("\n")
@@ -173,7 +176,7 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
             else:
                 color = blue if i % 4 == 0 else red  # Alternate colors with bold and visible red and blue
 
-            x = round_idx * round_width * 0.80  # Increase x to make lines longer
+            x = round_idx * round_width * 0.9  # Increase x to make lines longer
             y = (current_positions[i][1] + current_positions[i + 1][1]) / 2
 
             # Draw connecting lines
