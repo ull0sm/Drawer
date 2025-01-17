@@ -70,7 +70,7 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
 
     # Calculate spacing
     match_height = 1.85
-    round_width = 4 # changing this will adjust the first column distance from corner of the paper 
+    round_width = 4.0 # changing this will adjust the first column distance from corner of the paper 
 
     fig, ax = plt.subplots(figsize=(11.7,8.3))
     ax.set_xlim(0, num_rounds * round_width)
