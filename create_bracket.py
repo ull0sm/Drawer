@@ -91,7 +91,7 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
 
     # Calculate new dimensions to maintain aspect ratio
     new_width = plot_width * 0.5  # Watermark width as 50% of plot width
-    new_height = new_width / aspect_ratio  # Calculate height to maintain aspect ratio
+    new_height = new_width * 1.5  # Calculate height to maintain aspect ratio
 
     # Position the watermark image (adjust x, y for desired placement)
     ax.imshow(watermark, aspect='auto', extent=[(plot_width - new_width) / 2, (plot_width + new_width) / 2, 
@@ -149,11 +149,17 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
         else:
             name, school = parts
 
-        ax.text(x, y, name, ha="right", va="center", fontsize=12, color="white",  # Larger font for number/name
-                bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor=color, lw=1, alpha=0.9))
-        # Display the school name in a smaller font on the next line
-        ax.text(x, y - 0.6, school, ha="right", va="center", fontsize=8, color="white",  # Smaller font for school
-                bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor=color, lw=1, alpha=0.9))
+        # Combine the name and school into a single text block with a newline character
+        text = f"{name}\n{school}"
+
+        # Display the combined text block with border only and dark text color
+        ax.text(x, y, text, ha="right", va="center", fontsize=10, color="black",  # Dark color for visibility
+                bbox=dict(boxstyle="round,pad=0.3", edgecolor=color, facecolor="none", lw=2, alpha=0.9))  # Border only
+        tempx = x
+        tempy = y
+        tie = f"|1|2|3|4|5|6|7|8|9|10|11|12|\n|C1|C2|C3|HC|H|Senshu|"
+        ax.text(tempx, tempy - 0.85, tie, ha="right", va="center", fontsize=10, color="black",  # Dark color for school text
+                bbox=dict(boxstyle="round,pad=0.3", edgecolor=color, facecolor="none", lw=2, alpha=0.9))  # Border only
         positions.append((x, y))
 
     # Draw subsequent rounds with a winner placeholder at each joint
@@ -171,17 +177,25 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
             y = (current_positions[i][1] + current_positions[i + 1][1]) / 2
 
             # Draw connecting lines
-            ax.plot([current_positions[i][0], x], [current_positions[i][1], y], color=color, lw=1.5)
-            ax.plot([current_positions[i + 1][0], x], [current_positions[i + 1][1], y], color=color, lw=1.5)
+            ax.plot([current_positions[i][0], x], [current_positions[i][1], y], color="black", lw=1.5, alpha=0.5)
+            ax.plot([current_positions[i + 1][0], x], [current_positions[i + 1][1], y], color="black", lw=1.5, alpha=0.5)
 
-            # Add placeholder for the winner
+            # Add placeholder for the winner with border only
             ax.text(x, y, "", ha="center", va="center", fontsize=12, color=winner_color,
-                    bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor=winner_color, lw=1, alpha=0.4))
+                    bbox=dict(boxstyle="round,pad=0.3", edgecolor=winner_color, facecolor="none", lw=2, alpha=0.4))
 
-            # Add "Winner" box at each intersection
+            # Add "Winner" box at each intersection with border only
             ax.text(x, y, "        ", ha="center", va="center", fontsize=10, color="white", weight='bold',
-                    bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor=color, lw=1, alpha=0.8),
+                    bbox=dict(boxstyle="round,pad=0.3", edgecolor=color, facecolor="none", lw=2, alpha=0.8),
                     alpha=0.2)
+            tempx = x
+            tempy = y
+
+            # This block should only run if it's NOT the last round
+            if round_idx != num_rounds:
+                tie = f"|1|2|3|4|5|6|7|8|9|10|11|12|\n|C1|C2|C3|HC|H|Senshu|"
+                ax.text(tempx+1.2, tempy - 0.67, tie, ha="right", va="center", fontsize=10, color="black",  # Dark color for school text
+                        bbox=dict(boxstyle="round,pad=0.3", edgecolor=color, facecolor="none", lw=2, alpha=0.9))  # Border only
 
             next_positions.append((x, y))
 
@@ -209,7 +223,7 @@ def draw_bracket(sheet_name, players, pdf, watermark_image):
 
 def main():
     try:
-        input_excel = "grouped_output.xlsx"  # Replace with your Excel file path
+        input_excel = "demo_run.xlsx"  # Replace with your Excel file path
         output_pdf = "multi_page_tournament_bracket.pdf"
         watermark_image = "watermark.png"  # Replace with your watermark PNG file path
 
