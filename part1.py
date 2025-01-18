@@ -69,11 +69,11 @@ def create_bracket(text,ctr,players):
     c.setFont("Helvetica", 30)  # Set font and size
     c.drawString(160,1450,text = f"Pool_{ctr+1}")
     #Category
-    male = 1405
-    female = 1320
+    M = 1405
+    F = 1320
     
     c.setFont("Helvetica-Bold", 30)  # Set font and size
-    c.drawString(male,1370,"XXXX") # deine which category
+    c.drawString(M,1370,"XXXX") # deine which category
     c.setFont("Helvetica-Bold", 25)  # Set font and size
     c.drawString(1600,1313, text = category)
     
