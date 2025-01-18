@@ -89,7 +89,7 @@ def create_bracket(text, ctr, players):
     c.drawString(620, 1450, "Shorin Kai Republic Bharat Cup - 2025")
     c.setFont("Helvetica", 30)  # Set font and size
     c.drawString(160, 1300, "Number")
-    c.drawString(510, 1300, "Name")
+    c.drawString(350, 1300, "Name")
     c.drawString(860, 1300, "School")
     c.rect(150, 1435, 110, 50)  # x, y, width, height
     c.drawString(160, 1450, text=f"Pool_{ctr+1}")
@@ -101,7 +101,10 @@ def create_bracket(text, ctr, players):
     ctr = 0
     for i in range(int(len(players) / 3)):
         for j in range(3):
-            c.drawString(160 + (j * 350), 1200 - (i * 100), players[ctr])
+            N = 350
+            if j == 1:
+                N = 200
+            c.drawString(160 + (j * N), 1230 - (i * 80), players[ctr])
             ctr += 1
     
     c.save()
