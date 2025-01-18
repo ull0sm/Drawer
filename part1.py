@@ -5,7 +5,7 @@ from PIL import Image
 import os
 from PyPDF2 import PdfMerger
 
-category = "White_N_Yellow_U14"
+category = f"WHITE_9_M_SAT"
 
 def read(filepath):
     # Read all sheets into a dictionary of DataFrames
@@ -120,6 +120,3 @@ def pdf_merger(category):
     merger.close()
 
     print(f"Merged PDF is saved at {output_PDF}")
-
-s = read("demo_run.xlsx")
-pdf_merger(category)
