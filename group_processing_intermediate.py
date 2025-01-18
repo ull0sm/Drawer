@@ -1,7 +1,7 @@
 import os
 import pandas as pd
-from part1 import read, pdf_merger
-import part1
+from bracket_pdf_generator import read, pdf_merger
+import bracket_pdf_generator as pt
 
 def process_datasets_in_groups(folder_path):
     # Ensure the folder exists
@@ -23,8 +23,8 @@ def process_datasets_in_groups(folder_path):
                 SEX_value = 1320
 
             # Import part1 and set category and SEX
-            part1.category = datasetname
-            part1.SEX = SEX_value
+            pt.category = datasetname
+            pt.SEX = SEX_value
             
             print(f"Processing {filename} with category {datasetname} and SEX {SEX_value}")
 

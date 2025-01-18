@@ -50,6 +50,9 @@ def process_all_files(input_dir, output_dir):
             divide_and_group(file_path, output_dir)
 
 if __name__ == "__main__":
+    input_directory = ".\\filtered_data\\sat"
+    output_directory = ".\\groups"
+    process_all_files(input_directory, output_directory)
     input_directory = ".\\filtered_data\\sun"
     output_directory = ".\\groups"
     process_all_files(input_directory, output_directory)

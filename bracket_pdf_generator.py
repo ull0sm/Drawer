@@ -9,15 +9,15 @@ category = ""
 SEX = 0
 
 def read(filepath):
-    # Create the output folder if it doesn't exist, or clean it if it does
-    output_folder = ".\\output"
+    # Create the temp folder if it doesn't exist, or clean it if it does
+    output_folder = ".\\temp"
     if os.path.exists(output_folder):
-        # Delete all files in the output folder
+        # Delete all files in the temp folder
         for filename in os.listdir(output_folder):
             file_path = os.path.join(output_folder, filename)
             os.unlink(file_path)
     else:
-        # Create the output folder if it doesn't exist
+        # Create the temp folder if it doesn't exist
         os.makedirs(output_folder)
     
     # Read all sheets into a dictionary of DataFrames
@@ -54,7 +54,7 @@ def read(filepath):
 
 def create_bracket(text, ctr, players):
     image_path = "score_sheet.png"  # Replace with your image file
-    output_pdf_path = f".\\output\\output_{ctr}.pdf"
+    output_pdf_path = f".\\temp\\output_{ctr}.pdf"
 
     # Open the image to get its dimensions
     image = Image.open(image_path)
@@ -108,7 +108,7 @@ def create_bracket(text, ctr, players):
     print(f"PDF with text saved at {output_pdf_path}")
 
 def pdf_merger():
-    inputfolder = ".\\output"
+    inputfolder = ".\\temp"
     output_PDF = f".\\score_sheets\\{category}.pdf"
 
     # Initialize a PdfMerger object
@@ -120,14 +120,14 @@ def pdf_merger():
             file_path = os.path.join(inputfolder, filename)
             merger.append(file_path)
 
-    # Write the merged PDF to the output location
+    # Write the merged PDF to the temp location
     merger.write(output_PDF)
     merger.close()
 
     print(f"Merged PDF is saved at {output_PDF}")
 
-    # After merging, delete the output folder and its contents
+    # After merging, delete the temp folder and its contents
     for filename in os.listdir(inputfolder):
         file_path = os.path.join(inputfolder, filename)
         os.unlink(file_path)
-    print(f"Output folder cleaned.")
+    print(f"temp folder cleaned.")
