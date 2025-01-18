@@ -1,6 +1,28 @@
 import os
 import pandas as pd
 import math
+from collections import defaultdict
+
+def distribute_players(df, num_groups):
+    """
+    Distribute players into groups while attempting to separate players from the same school.
+    """
+    groups = [[] for _ in range(num_groups)]
+    school_players = defaultdict(list)
+
+    # Group players by school
+    for _, row in df.iterrows():
+        school_players[row['School']].append(row)
+
+    # Distribute players into groups
+    for school, players in school_players.items():
+        for i, player in enumerate(players):
+            group_index = i % num_groups
+            groups[group_index].append(player)
+
+    # Flatten groups into DataFrames
+    group_dfs = [pd.DataFrame(group) for group in groups]
+    return group_dfs
 
 def divide_and_group(file_path, save_path, max_players=8):
     # Read the Excel file
@@ -12,30 +34,17 @@ def divide_and_group(file_path, save_path, max_players=8):
     # Calculate the number of groups
     num_groups = math.ceil(total_players / max_players)
 
-    # Distribute players as evenly as possible
-    base_group_size = total_players // num_groups
-    extra_players = total_players % num_groups
-
-    group_sizes = [base_group_size for _ in range(num_groups)]
-    for i in range(extra_players):
-        group_sizes[i] += 1
+    # Distribute players into groups
+    group_dfs = distribute_players(df, num_groups)
 
     # Create a new Excel writer
     dataset_name = os.path.splitext(os.path.basename(file_path))[0]
     output_path = os.path.join(save_path, f"{dataset_name}.xlsx")
 
     with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
-        start_idx = 0
-        for i, group_size in enumerate(group_sizes):
-            end_idx = start_idx + group_size
-            
-            # Slice the dataframe for the current group
-            group_df = df.iloc[start_idx:end_idx]
-
+        for i, group_df in enumerate(group_dfs):
             # Write the group to a new sheet
             group_df.to_excel(writer, sheet_name=f"Group {i + 1}", index=False)
-
-            start_idx = end_idx
 
     print(f"Saved grouped dataset to {output_path}")
 

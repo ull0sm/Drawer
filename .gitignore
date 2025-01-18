@@ -1,6 +1,7 @@
 *.pdf
 *.png
 !watermark.png
+!score_sheet.png
 *.svg
 trial.py
 trial2.py
