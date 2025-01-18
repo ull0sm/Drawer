@@ -5,9 +5,21 @@ from PIL import Image
 import os
 from PyPDF2 import PdfMerger
 
-category = "White_N_Yellow_U14"
+category = ""
+SEX = 0
 
 def read(filepath):
+    # Create the temp folder if it doesn't exist, or clean it if it does
+    output_folder = ".\\temp"
+    if os.path.exists(output_folder):
+        # Delete all files in the temp folder
+        for filename in os.listdir(output_folder):
+            file_path = os.path.join(output_folder, filename)
+            os.unlink(file_path)
+    else:
+        # Create the temp folder if it doesn't exist
+        os.makedirs(output_folder)
+    
     # Read all sheets into a dictionary of DataFrames
     sheets = pd.read_excel(filepath, sheet_name=None)
     
@@ -17,12 +29,11 @@ def read(filepath):
         # Iterate through each row and create the formatted string for each row
         players = []
         for index, row in df.iterrows():
-            
             temp = f"{row['Number']} | {row['Name']}"
             text.append(temp)
             players.extend([f"{row['Number']}", f"{row['Name']}", f"{row['School']}"])
 
-        while len(text)<8:
+        while len(text) < 8:
             text.append("BYE")
     
         random.shuffle(text)
@@ -38,12 +49,12 @@ def read(filepath):
                 continue  # If 'BYE' is in even positions, shuffle again
             else:
                 break  # If 'BYE' is not in even positions, stop shuffling
-        create_bracket(text=text,ctr=ctr,players=players)
-        ctr = ctr +1 
-        
-def create_bracket(text,ctr,players):
+        create_bracket(text=text, ctr=ctr, players=players)
+        ctr += 1 
+
+def create_bracket(text, ctr, players):
     image_path = "score_sheet.png"  # Replace with your image file
-    output_pdf_path = f".\\output\\output_{ctr}.pdf"
+    output_pdf_path = f".\\temp\\output_{ctr}.pdf"
 
     # Open the image to get its dimensions
     image = Image.open(image_path)
@@ -55,56 +66,50 @@ def create_bracket(text,ctr,players):
     # Draw the image onto the PDF
     c.drawImage(image_path, 0, 100, width, height)  # Place image slightly below to leave space for text
     
-    
     c.setFont("Helvetica-Bold", 40)  # Use bold font for the title
     c.drawString(620, 1450, "Shorin Kai Republic Bharat Cup - 2025")
     
-    y = [1335,1180,1035,880,740,580,440,280]
+    y = [1335, 1180, 1035, 880, 740, 580, 440, 280]
     c.setFont("Helvetica-Bold", 30)  # Set font and size
     for i in range(8):  
-        c.drawString(160,y[i], text=text[i])  # Position and content of the text
+        c.drawString(160, y[i], text=text[i])  # Position and content of the text
         
-    
     c.rect(150, 1435, 110, 50)  # x, y, width, height
     c.setFont("Helvetica", 30)  # Set font and size
-    c.drawString(160,1450,text = f"Pool_{ctr+1}")
-    #Category
-    male = 1405
-    female = 1320
+    c.drawString(160, 1450, text=f"Pool_{ctr+1}")
     
     c.setFont("Helvetica-Bold", 30)  # Set font and size
-    c.drawString(male,1370,"XXXX") # deine which category
+    c.drawString(SEX, 1370, "XXXX")  # Define which category
     c.setFont("Helvetica-Bold", 25)  # Set font and size
-    c.drawString(1600,1313, text = category)
+    c.drawString(1600, 1313, text=category)
     
     # New page
     c.showPage()
     c.setFont("Helvetica-Bold", 40)  # Use bold font for the title
     c.drawString(620, 1450, "Shorin Kai Republic Bharat Cup - 2025")
     c.setFont("Helvetica", 30)  # Set font and size
-    c.drawString(160,1300,"Number")
-    c.drawString(510,1300,"Name")
-    c.drawString(860,1300,"School")
+    c.drawString(160, 1300, "Number")
+    c.drawString(510, 1300, "Name")
+    c.drawString(860, 1300, "School")
     c.rect(150, 1435, 110, 50)  # x, y, width, height
-    c.drawString(160,1450,text = f"Pool_{ctr+1}")
+    c.drawString(160, 1450, text=f"Pool_{ctr+1}")
     
     c.setFont("Helvetica", 20)  # Set font and size
-    c.drawString(1600,1450, text = f"Category : {category}")
+    c.drawString(1600, 1450, text=f"Category : {category}")
     
     c.setFont("Helvetica", 30)  # Set font and size
     ctr = 0
-    for i in range((int)(len(players)/3)):
+    for i in range(int(len(players) / 3)):
         for j in range(3):
-            c.drawString(160+(j*350),1200-(i*100),players[ctr])
-            ctr = ctr+1
+            c.drawString(160 + (j * 350), 1200 - (i * 100), players[ctr])
+            ctr += 1
     
     c.save()
     print(f"PDF with text saved at {output_pdf_path}")
-    
-    
-def pdf_merger(category):
-    inputfolder = ".\\output"
-    output_PDF = f".\\{category}.pdf"
+
+def pdf_merger():
+    inputfolder = ".\\temp"
+    output_PDF = f".\\score_sheets\\{category}.pdf"
 
     # Initialize a PdfMerger object
     merger = PdfMerger()
@@ -115,11 +120,14 @@ def pdf_merger(category):
             file_path = os.path.join(inputfolder, filename)
             merger.append(file_path)
 
-    # Write the merged PDF to the output location
+    # Write the merged PDF to the temp location
     merger.write(output_PDF)
     merger.close()
 
     print(f"Merged PDF is saved at {output_PDF}")
 
-s = read("demo_run.xlsx")
-pdf_merger(category)
+    # After merging, delete the temp folder and its contents
+    for filename in os.listdir(inputfolder):
+        file_path = os.path.join(inputfolder, filename)
+        os.unlink(file_path)
+    print(f"temp folder cleaned.")
