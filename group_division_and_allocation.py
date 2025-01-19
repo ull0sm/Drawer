@@ -5,24 +5,40 @@ from collections import defaultdict
 
 def distribute_players(df, num_groups):
     """
-    Distribute players into groups while attempting to separate players from the same school.
+    Distribute players into groups in ascending order of weight (WT),
+    while minimizing players from the same school in the same group.
     """
-    groups = [[] for _ in range(num_groups)]
-    school_players = defaultdict(list)
-
-    # Group players by school
+    # Sort the DataFrame by weight (ascending)
+    df = df.sort_values(by="WT").reset_index(drop=True)
+    
+    # Initialize empty groups
+    groups = [pd.DataFrame(columns=df.columns) for _ in range(num_groups)]
+    
+    # Keep track of group sizes and school distribution
+    group_sizes = [0] * num_groups
+    school_counts = [{} for _ in range(num_groups)]
+    
     for _, row in df.iterrows():
-        school_players[row['School']].append(row)
-
-    # Distribute players into groups
-    for school, players in school_players.items():
-        for i, player in enumerate(players):
-            group_index = i % num_groups
-            groups[group_index].append(player)
-
-    # Flatten groups into DataFrames
-    group_dfs = [pd.DataFrame(group) for group in groups]
-    return group_dfs
+        # Find the group that best fits this player
+        best_group = -1
+        min_school_overlap = float('inf')
+        
+        for i in range(num_groups):
+            school = row["School"]
+            # Calculate how many players from the same school are in this group
+            overlap = school_counts[i].get(school, 0)
+            
+            # Choose the group with the least overlap and balanced size
+            if overlap < min_school_overlap or (overlap == min_school_overlap and group_sizes[i] < group_sizes[best_group]):
+                min_school_overlap = overlap
+                best_group = i
+        
+        # Add player to the selected group
+        groups[best_group] = pd.concat([groups[best_group], pd.DataFrame([row])], ignore_index=True)
+        group_sizes[best_group] += 1
+        school_counts[best_group][row["School"]] = school_counts[best_group].get(row["School"], 0) + 1
+    
+    return groups
 
 def divide_and_group(file_path, save_path, max_players=8):
     # Read the Excel file
