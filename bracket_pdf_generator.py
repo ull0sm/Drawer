@@ -71,7 +71,10 @@ def create_bracket(text, ctr, players):
     
     y = [1335, 1180, 1035, 880, 740, 580, 440, 280]
     c.setFont("Helvetica-Bold", 30)  # Set font and size
-    for i in range(8):  
+    for i in range(8):
+        c.setFillAlpha(1.0)
+        if(text[i]== "BYE"):
+            c.setFillAlpha(0.35)  
         c.drawString(160, y[i], text=text[i])  # Position and content of the text
         
     c.rect(150, 1435, 110, 50)  # x, y, width, height
