@@ -24,7 +24,7 @@ Drawer is a Python-based project designed to automate the creation of single-eli
 ## Files and Code Description
 
 ### **Code 1:**
-This script filters player data from the raw dataset (`RBC_CUP.xlsx`) and creates categorized Excel sheets. Key features include:
+This script filters player data from the raw dataset (`Demo_Run.xlsx`) and creates categorized Excel sheets. Key features include:
 
 - Filtering by gender, attendance day, belt color, and age groups.
 - Saving the filtered data into structured directories (`filtered_data/sat` and `filtered_data/sun`).
@@ -68,7 +68,7 @@ A master script to automate the entire process by executing the other scripts in
   - `reportlab`
   - `pillow`
   - `PyPDF2`
-- Raw dataset: `RBC_CUP.xlsx`
+- Raw dataset: `Demo_Run.xlsx`
 - Template image: `score_sheet.png`
 
 ## Setup Instructions
@@ -84,7 +84,7 @@ A master script to automate the entire process by executing the other scripts in
    pip install pandas openpyxl reportlab pillow PyPDF2
    ```
 
-3. Place the raw dataset (`RBC_CUP.xlsx`) in the root directory.
+3. Place the raw dataset (`Demo_Run.xlsx`) in the root directory.
 4. Place the template image (`score_sheet.png`) in the root directory.
 
 ## Usage
@@ -117,7 +117,7 @@ project_root/
 ├── group_processing_intermediate.py
 ├── bracket_pdf_generator.py
 ├── auto_run.py
-├── RBC_CUP.xlsx
+├── Demo_Run.xlsx
 ├── score_sheet.png
 ├── filtered_data/
 │   ├── sat/

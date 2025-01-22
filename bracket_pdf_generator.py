@@ -69,8 +69,11 @@ def create_bracket(text, ctr, players):
     c.drawImage(image_path, 0, 100, width, height)  # Place image slightly below to leave space for text
 
     pdfmetrics.registerFont(TTFont('font', 'Allan-Bold.ttf'))
-    c.setFont('font', 60)  # Use bold font for the title
-    c.drawString(620, 1450, "Shorin Kai Republic Bharat Cup - 2025")
+    Title = "Your Tournament Name"
+    size = 60
+    xtemp = (width - len(Title)*size/2)/2
+    c.setFont('font', size)  # Use bold font for the title
+    c.drawString(xtemp, 1450, Title)
     
     y = [1335, 1180, 1035, 880, 740, 580, 440, 280]
     for i in range(8):
@@ -94,7 +97,7 @@ def create_bracket(text, ctr, players):
     # New page
     c.showPage()
     c.setFont("font", 60)  # Use bold font for the title
-    c.drawString(620, 1450, "Shorin Kai Republic Bharat Cup - 2025")
+    c.drawString(xtemp, 1450, Title)
     c.setFont("Helvetica", 30)  # Set font and size
     c.drawString(160, 1300, "Number")
     c.drawString(350, 1300, "Name")
