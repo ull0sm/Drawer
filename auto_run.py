@@ -11,7 +11,17 @@ def run_script(script_name):
         print(f"Error occurred while running {script_name}: {e}")
         raise
 
+def create_directories():
+    directories = ["temp", "score_sheets", "groups", "filtered_data"]
+    for directory in directories:
+        if not os.path.exists(directory):
+            print(f"Creating directory: {directory}")
+            os.makedirs(directory)
+
 def main():
+    # Ensure required directories are present
+    create_directories()
+
     # Define the scripts in order
     scripts = [
         "data_filtering_and_export.py",

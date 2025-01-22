@@ -59,7 +59,7 @@ def create_filtered_excel(input_file):
                         print(f"Created file: {file_name}")
 
 # Input file containing the data
-input_file = '.\\RBC_CUP.xlsx'
+input_file = '.\\Demo_Run.xlsx'
 
 # Call the function to process and create Excel files
 create_filtered_excel(input_file)
