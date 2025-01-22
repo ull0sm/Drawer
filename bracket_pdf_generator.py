@@ -4,6 +4,8 @@ from reportlab.pdfgen import canvas
 from PIL import Image
 import os
 from PyPDF2 import PdfMerger
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
 
 category = ""
 SEX = 0
@@ -65,18 +67,21 @@ def create_bracket(text, ctr, players):
     
     # Draw the image onto the PDF
     c.drawImage(image_path, 0, 100, width, height)  # Place image slightly below to leave space for text
-    
-    c.setFont("Helvetica-Bold", 40)  # Use bold font for the title
+
+    pdfmetrics.registerFont(TTFont('font', 'Allan-Bold.ttf'))
+    c.setFont('font', 60)  # Use bold font for the title
     c.drawString(620, 1450, "Shorin Kai Republic Bharat Cup - 2025")
     
     y = [1335, 1180, 1035, 880, 740, 580, 440, 280]
-    c.setFont("Helvetica-Bold", 30)  # Set font and size
     for i in range(8):
+        c.setFont("Helvetica-Bold", 30)  # Set font and size
         c.setFillAlpha(1.0)
         if(text[i]== "BYE"):
+            c.setFont("Helvetica", 30)  # Set font and size
             c.setFillAlpha(0.35)  
         c.drawString(160, y[i], text=text[i])  # Position and content of the text
         
+    c.setFillAlpha(1.0)
     c.rect(150, 1435, 110, 50)  # x, y, width, height
     c.setFont("Helvetica", 30)  # Set font and size
     c.drawString(160, 1450, text=f"Pool_{ctr+1}")
@@ -88,7 +93,7 @@ def create_bracket(text, ctr, players):
     
     # New page
     c.showPage()
-    c.setFont("Helvetica-Bold", 40)  # Use bold font for the title
+    c.setFont("font", 60)  # Use bold font for the title
     c.drawString(620, 1450, "Shorin Kai Republic Bharat Cup - 2025")
     c.setFont("Helvetica", 30)  # Set font and size
     c.drawString(160, 1300, "Number")
