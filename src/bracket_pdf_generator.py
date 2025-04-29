@@ -12,7 +12,7 @@ SEX = 0
 
 def read(filepath):
     # Create the temp folder if it doesn't exist, or clean it if it does
-    output_folder = "./temp"
+    output_folder = "./data/temp"
     if os.path.exists(output_folder):
         # Delete all files in the temp folder
         for filename in os.listdir(output_folder):
@@ -55,8 +55,8 @@ def read(filepath):
         ctr += 1 
 
 def create_bracket(text, ctr, players):
-    image_path = "score_sheet.png"  # Replace with your image file
-    output_pdf_path = f"./temp/output_{ctr}.pdf"
+    image_path = "data/input_files/score_sheet.png"  # Replace with your image file
+    output_pdf_path = f"./data/temp/output_{ctr}.pdf"
 
     # Open the image to get its dimensions
     image = Image.open(image_path)
@@ -68,10 +68,18 @@ def create_bracket(text, ctr, players):
     # Draw the image onto the PDF
     c.drawImage(image_path, 0, 100, width, height)  # Place image slightly below to leave space for text
 
-    pdfmetrics.registerFont(TTFont('font', 'Allan-Bold.ttf'))
+    # Get the current script directory
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Define the font path relative to the script directory
+    font_path = os.path.join(script_dir, '..', 'data', 'input_files', 'Allan-Bold.ttf')
+
+    # Register the font using the absolute path
+    pdfmetrics.registerFont(TTFont('font', font_path))
+    
     Title = "Your Tournament Name"
     size = 60
-    xtemp = (width - len(Title)*size/2)/2
+    xtemp = (width - len(Title) * size / 2) / 2
     c.setFont('font', size)  # Use bold font for the title
     c.drawString(xtemp, 1450, Title)
     
@@ -79,7 +87,7 @@ def create_bracket(text, ctr, players):
     for i in range(8):
         c.setFont("Helvetica-Bold", 30)  # Set font and size
         c.setFillAlpha(1.0)
-        if(text[i]== "BYE"):
+        if text[i] == "BYE":
             c.setFont("Helvetica", 30)  # Set font and size
             c.setFillAlpha(0.35)  
         c.drawString(160, y[i], text=text[i])  # Position and content of the text
@@ -122,8 +130,8 @@ def create_bracket(text, ctr, players):
     print(f"PDF with text saved at {output_pdf_path}")
 
 def pdf_merger():
-    inputfolder = "./temp"
-    output_PDF = f"./score_sheets/{category}.pdf"
+    inputfolder = "./data/temp"
+    output_PDF = f"./data/score_sheets/{category}.pdf"
 
     # Initialize a PdfMerger object
     merger = PdfMerger()

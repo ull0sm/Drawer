@@ -12,7 +12,7 @@ def run_script(script_name):
         raise
 
 def create_directories():
-    directories = ["temp", "score_sheets", "groups", "filtered_data"]
+    directories = ["temp", "data/score_sheets", "data/groups", "data/filtered_data/sat", "data/filtered_data/sun"]
     for directory in directories:
         if not os.path.exists(directory):
             print(f"Creating directory: {directory}")
@@ -24,11 +24,12 @@ def main():
 
     # Define the scripts in order
     scripts = [
-        "data_filtering_and_export.py",
-        "group_division_and_allocation.py",
-        "group_processing_intermediate.py",
-        "bracket_pdf_generator.py"
+    "src/data_filtering_and_export.py",
+    "src/group_division_and_allocation.py",
+    "src/group_processing_intermediate.py",
+    "src/bracket_pdf_generator.py"
     ]
+
 
     # Run each script in order
     for script in scripts:

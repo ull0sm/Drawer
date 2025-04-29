@@ -2,10 +2,9 @@ import pandas as pd
 import os
 
 # Ensure filtered_data directory exists
-if not (os.path.exists("./filtered_data") & os.path.exists("./filtered_data/sun") & os.path.exists(".\\filtered_data\\sat")):
-    os.makedirs("./filtered_data",exist_ok=True)
-    os.makedirs("./filtered_data/sun",exist_ok=True)
-    os.makedirs("./filtered_data/sat",exist_ok=True)
+if not (os.path.exists("./data/filtered_data/sun") and os.path.exists("./data/filtered_data/sat")):
+    os.makedirs("./data/filtered_data/sun", exist_ok=True)
+    os.makedirs("./data/filtered_data/sat", exist_ok=True)
 
 # Function to filter and create the Excel sheets
 def create_filtered_excel(input_file):
@@ -50,16 +49,16 @@ def create_filtered_excel(input_file):
                         
                         # Create file name in the format: BELT_AGE_SEX_DAY.xlsx
                         if day == "SAT":
-                            file_name = f"./filtered_data/sat/{belt.upper()}_{age_group}_{sex}_{day}.xlsx"
+                            file_name = f"./data/filtered_data/sat/{belt.upper()}_{age_group}_{sex}_{day}.xlsx"
                         if day == "SUN":
-                            file_name = f"./filtered_data/sun/{belt.upper()}_{age_group}_{sex}_{day}.xlsx"
+                            file_name = f"./data/filtered_data/sun/{belt.upper()}_{age_group}_{sex}_{day}.xlsx"
                         
                         # Save the filtered data to an Excel file
                         age_filtered_df.to_excel(file_name, index=False)
                         print(f"Created file: {file_name}")
 
 # Input file containing the data
-input_file = './Demo_Run.xlsx'
+input_file = './data/input_files/Demo_Run.xlsx'
 
 # Call the function to process and create Excel files
 create_filtered_excel(input_file)

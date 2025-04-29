@@ -33,5 +33,5 @@ def process_datasets_in_groups(folder_path):
             pdf_merger()  # This merges the PDFs
 
 # Example usage
-folder_path = "./groups"
+folder_path = "./data/groups"
 process_datasets_in_groups(folder_path)

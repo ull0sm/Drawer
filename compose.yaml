@@ -1,8 +1,8 @@
 version: "3.9"
 services:
   drawer:
-    image: ull0sm/drawer
+    image: ull0sm/drawer:new-version
     volumes:
-      - ~/Desktop/output/groups:/app/groups
-      - ~/Desktop/output/score_sheets:/app/score_sheets
-    command: python auto_run.py
+      - ~/Desktop/output/data/groups:/app/data/groups
+      - ~/Desktop/output/data/score_sheets:/app/data/score_sheets
+    command: python automation/auto_run.py
