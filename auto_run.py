@@ -5,7 +5,7 @@ def run_script(script_name):
     try:
         # Run the script as a subprocess
         print(f"Running {script_name}...")
-        subprocess.run(["python", script_name], check=True)
+        subprocess.run(["python3", script_name], check=True)
         print(f"{script_name} completed successfully.")
     except subprocess.CalledProcessError as e:
         print(f"Error occurred while running {script_name}: {e}")

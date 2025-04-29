@@ -12,7 +12,7 @@ SEX = 0
 
 def read(filepath):
     # Create the temp folder if it doesn't exist, or clean it if it does
-    output_folder = ".\\temp"
+    output_folder = "./temp"
     if os.path.exists(output_folder):
         # Delete all files in the temp folder
         for filename in os.listdir(output_folder):
@@ -56,7 +56,7 @@ def read(filepath):
 
 def create_bracket(text, ctr, players):
     image_path = "score_sheet.png"  # Replace with your image file
-    output_pdf_path = f".\\temp\\output_{ctr}.pdf"
+    output_pdf_path = f"./temp/output_{ctr}.pdf"
 
     # Open the image to get its dimensions
     image = Image.open(image_path)
@@ -122,8 +122,8 @@ def create_bracket(text, ctr, players):
     print(f"PDF with text saved at {output_pdf_path}")
 
 def pdf_merger():
-    inputfolder = ".\\temp"
-    output_PDF = f".\\score_sheets\\{category}.pdf"
+    inputfolder = "./temp"
+    output_PDF = f"./score_sheets/{category}.pdf"
 
     # Initialize a PdfMerger object
     merger = PdfMerger()
