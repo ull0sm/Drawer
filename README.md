@@ -1,172 +1,152 @@
-# Drawer
+# Drawer System
 
 ## Project Overview
-
-Drawer is a Python-based project designed to automate the creation of single-elimination draw systems for karate events. The tool ensures fairness and reduces bias by automating the process, which includes filtering player data, creating groups, and generating match brackets in a streamlined and organized way.
+The Drawer System is a Python-based project designed to streamline the creation of single-elimination draw systems for karate events. It ensures fairness and minimizes bias by automating critical steps such as filtering player data, creating balanced groups, and generating match brackets in a professional format.
 
 ## Features
 
 1. **Data Filtering**
-   - Filters player data based on gender, day of attendance (Saturday or Sunday), belt color, and age groups.
-   - Generates separate Excel files for each filtered category.
+   - Filters player data based on gender, attendance day (Saturday or Sunday), belt color, and age group.
+   - Outputs structured Excel files for each category in `filtered_data/sat` and `filtered_data/sun` directories.
 
 2. **Group Creation**
    - Sorts players by weight and divides them into balanced groups.
-   - Ensures that players from the same school are distributed evenly across groups.
+   - Distributes players from the same school evenly across groups.
+   - Saves grouped data in the `groups` directory.
 
 3. **Bracket Generation**
-   - Processes group data and generates PDF brackets using a predefined template.
-   - Handles randomization while ensuring proper placement of `BYE` entries.
+   - Generates PDF match brackets using a predefined template (`score_sheet.png`).
+   - Randomizes player positions while ensuring logical placement of `BYE` entries.
+   - Combines individual PDFs into a consolidated output for each category.
 
 4. **Automation**
-   - Automates the entire pipeline, running all scripts in the correct order to produce the final single-elimination draw system.
-
-## Files and Code Description
-
-### **Code 1:**
-This script filters player data from the raw dataset (`Demo_Run.xlsx`) and creates categorized Excel sheets. Key features include:
-
-- Filtering by gender, attendance day, belt color, and age groups.
-- Saving the filtered data into structured directories (`filtered_data/sat` and `filtered_data/sun`).
-
-### **Code 2:**
-This script creates balanced groups from the filtered datasets. Features include:
-
-- Sorting players by weight.
-- Dividing players into groups with a maximum size of 8.
-- Ensuring minimal overlap of players from the same school within a group.
-- Saving grouped data into Excel files under the `groups` directory.
-
-### **Code 3:**
-Acts as a bridge between grouped datasets and the bracket generation algorithm. Features include:
-
-- Reading grouped datasets.
-- Configuring categories and gender-based identifiers.
-- Preparing data for bracket PDF generation.
-
-### **Code 4:**
-This script generates match brackets in PDF format for each group. Features include:
-
-- Using a template (`score_sheet.png`) to structure the brackets.
-- Randomizing player positions while maintaining logical placement of `BYE` entries.
-- Merging individual PDFs into a single file for each category.
-
-### **Code 5:**
-A master script to automate the entire process by executing the other scripts in sequence:
-
-1. `data_filtering_and_export.py`
-2. `group_division_and_allocation.py`
-3. `group_processing_intermediate.py`
-4. `bracket_pdf_generator.py`
+   - Automates the entire workflow through the `auto_run.py` script, executing all scripts sequentially.
 
 ## Prerequisites
 
-- Python 3.8+
-- Required Python libraries:
-  - `pandas`
-  - `openpyxl`
-  - `reportlab`
-  - `pillow`
-  - `PyPDF2`
-- Raw dataset: `Demo_Run.xlsx`
-- Template image: `score_sheet.png`
+1. **Dependencies**
+   - Python 3.8+
+   - Required libraries:
+     ```bash
+     pandas openpyxl reportlab pillow PyPDF2
+     ```
+
+2. **Required Files**
+   - `Demo_Run.xlsx`: Raw dataset of players.
+   - `score_sheet.png`: Template for generating brackets.
+   - `Allan-Bold.ttf`: Font file for custom bracket titles.
 
 ## Setup Instructions
 
-1. Clone the repository to your local machine:
+1. **Clone the Repository**
    ```bash
    git clone https://github.com/ull0sm/Drawer.git
    cd Drawer
    ```
 
-2. Install the required libraries:
+2. **Install Dependencies**
    ```bash
-   pip install pandas openpyxl reportlab pillow PyPDF2
+   pip install -r requirements.txt
    ```
 
-3. Place the raw dataset (`Demo_Run.xlsx`) in the root directory.
-4. Place the template image (`score_sheet.png`) in the root directory.
+3. **Organize Files**
+   - Place the raw dataset (`Demo_Run.xlsx`) and template image (`score_sheet.png`) in the `input_files` directory.
 
-## Usage
-
-1. To manually execute each step, run the scripts in the following order:
-   ```bash
-   python data_filtering_and_export.py
-   python group_division_and_allocation.py
-   python group_processing_intermediate.py
-   python bracket_pdf_generator.py
-   ```
-
-2. To automate the process, run `auto_run.py`:
-   ```bash
-   python auto_run.py
-   ```
-
-## Output
-
-- Filtered data files in `filtered_data/sat` and `filtered_data/sun`.
-- Grouped data files in the `groups` directory.
-- PDF match brackets in the `score_sheets` directory.
+4. **Docker Setup (Optional)**
+   - Pull the Docker image:
+     ```bash
+     docker pull ull0sm/drawer
+     ```
+   - Run the container:
+     ```bash
+     docker compose up
+     ```
 
 ## Directory Structure
 
 ```
 project_root/
-├── data_filtering_and_export.py
-├── group_division_and_allocation.py
-├── group_processing_intermediate.py
-├── bracket_pdf_generator.py
-├── auto_run.py
-├── Demo_Run.xlsx
-├── score_sheet.png
-├── filtered_data/
-│   ├── sat/
-│   ├── sun/
-├── groups/
-├── score_sheets/
+├── src/
+│   ├── data_filtering_and_export.py
+│   ├── group_division_and_allocation.py
+│   ├── group_processing_intermediate.py
+│   ├── bracket_pdf_generator.py
+├── automation/
+│   ├── auto_run.py
+├── data/
+│   ├── filtered_data/
+│   │   ├── sat/
+│   │   ├── sun/
+│   ├── groups/
+│   ├── score_sheets/
+│   ├── input_files/
+│   │   ├── score_sheet.png
+│   │   ├── Demo_Run.xlsx
+│   │   ├── Allan-Bold.ttf
+│   ├── temp/
+├── requirements.txt
+├── compose.yaml
+├── Dockerfile
 ```
+
+## Usage
+
+1. **Manual Execution**
+   - Run the scripts in the following order:
+     ```bash
+     python3 src/data_filtering_and_export.py
+     python3 src/group_division_and_allocation.py
+     python3 src/group_processing_intermediate.py
+     python3 src/bracket_pdf_generator.py
+     ```
+
+2. **Automated Execution**
+   - Run the `auto_run.py` script:
+     ```bash
+     python3 automation/auto_run.py
+     ```
+
+3. **Docker Execution**
+   - Start the pipeline in a Docker container:
+     ```bash
+     docker compose up
+     ```
+
+## Outputs
+
+- **Filtered Data**: Organized in `data/filtered_data/sat` and `data/filtered_data/sun`.
+- **Grouped Data**: Saved in `data/groups/`.
+- **Brackets**: PDF files in `data/score_sheets/`.
 
 ## Contributing
 
-### Cloning the Repository and Creating a Feature Branch
-
-1. Clone the repository to your local machine:
+1. **Clone the Repository**
    ```bash
    git clone https://github.com/ull0sm/Drawer.git
    cd Drawer
    ```
 
-2. Create a new branch for your feature:
+2. **Create a Feature Branch**
    ```bash
    git checkout -b new-feature
    ```
 
-### Making Changes
+3. **Implement Changes**
+   - Modify the relevant scripts.
+   - Test thoroughly.
 
-1. Implement your changes in the relevant files.
-2. Test your changes to ensure they work as expected.
-
-### Committing and Pushing Changes
-
-1. Add your changes to the staging area:
+4. **Commit and Push Changes**
    ```bash
    git add .
-   ```
-
-2. Commit your changes with a descriptive message:
-   ```bash
    git commit -m "Add [feature description]"
-   ```
-
-3. Push your changes to the remote repository:
-   ```bash
    git push origin new-feature
    ```
 
-### Creating a Pull Request
+5. **Submit a Pull Request**
+   - Navigate to the repository on GitHub.
+   - Create a pull request from your `new-feature` branch to the `main` branch.
 
-1. Navigate to the repository on GitHub.
-2. Go to the "Pull Requests" tab and click "New Pull Request."
-3. Select your `new-feature` branch and compare it with the `main` branch.
-4. Add a title and description for your pull request.
-5. Submit the pull request for review.
+---
+
+For any questions or issues, feel free to open a GitHub issue or contribute to improving the project.
+
