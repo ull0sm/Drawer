@@ -55,7 +55,7 @@ def read(filepath):
         ctr += 1 
 
 def create_bracket(text, ctr, players):
-    image_path = "data/input_files/score_sheet.png"  # Replace with your image file
+    image_path = "./data/input_files/score_sheet.png"  # Replace with your image file
     output_pdf_path = f"./data/temp/output_{ctr}.pdf"
 
     # Open the image to get its dimensions
